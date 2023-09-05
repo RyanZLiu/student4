@@ -4,12 +4,29 @@ title: Student Blog
 ---
 
 
-## Build you Home Page here 
-This is about your journey. Start now!!!
+## Ryan's Page
+Welcome to my realm of computer science.
+I hope you will join me on my journey while I uncover the secrets of computer science.
 
-## Overview of Hacks, Study and Tangibles
-Blogging in GitHub pages is a way to learn and code at the same time. 
+ 
+## READ ME
 
-- Plans, Lists, [Scrum Boards](https://clickup.com/blog/scrum-board/) help you to track key events, show progress and record time.  Effort is a big part of your class grade.  Show plans and time spent!
-- [Hacks(Todo)](https://levelup.gitconnected.com/six-ultimate-daily-hacks-for-every-programmer-60f5f10feae) enable you to stay in focus with key requirements of the class.  Each Hack will produce Tangibles.
-- Tangibles or [Tangible Artifacts](https://en.wikipedia.org/wiki/Artifact_(software_development)) are things you accumulate as a learner and coder. 
+- 👋 Hi, I’m Ryan Liu
+- 👀 I’m interested in math and science
+- 🌱 I’m currently learning physics: mechanics
+- 💞️ I’m looking to collaborate on any projects
+
+![aboutryan](images/ryanaboutme.png)
+
+This is my favorite tennis match:
+
+<html>
+<head>
+    <title>Aus2012final</title>
+</head>
+<body>
+    <div style="position: relative; padding-bottom: 56.25%; height: 0;">
+        <iframe src="https://www.youtube.com/embed/-kaaXz4IgrA" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+    </div>
+</body>
+</html>
