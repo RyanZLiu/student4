@@ -2,8 +2,8 @@
 toc: true
 comments: false
 layout: post
-title: Calculator
-description: A simple calculator
+title: Calculator with code
+description: A simple calculator included with code. (Scroll down to the bottom for the calculator)
 type: tangibles
 courses: { compsci: {week: 2} }
 ---
