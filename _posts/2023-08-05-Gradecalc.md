@@ -8,10 +8,6 @@ type: hacks
 courses: { compsci: {week: 2} }
 ---
 
-
-
-
-
 <!-- Heading -->
 <h1>Grade Calculator</h1>
 <h2>Input scores, press tab to add each new number.</h2>
