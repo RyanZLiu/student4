@@ -14,7 +14,7 @@ courses: { compsci: {week: 2} }
 <!-- Totals -->
 <h3>
     Total : <span id="total">0.0</span>
-    Count : <span id="count">0.0</span>
+    Count : <span id="count">0</span>
     Average : <span id="average">0.0</span>
 </h3>
 <!-- Rows -->
