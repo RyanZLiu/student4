@@ -5,7 +5,7 @@ layout: post
 title: Week 1 Summary
 description: Look at what I did for the first week
 type: plans
-courses: { compsci: {week: 2} }
+courses: { compsci: {week: 1} }
 ---
 
 ## Week 1
