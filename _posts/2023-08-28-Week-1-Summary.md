@@ -4,7 +4,7 @@ comments: false
 layout: post
 title: Week 1 Summary
 description: Look at what I did for the first week
-type: tangibles
+type: plans
 courses: { compsci: {week: 1} }
 ---
 
