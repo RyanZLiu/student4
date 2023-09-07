@@ -4,7 +4,7 @@ comments: false
 layout: post
 title: Tennis Players
 description: Some basic stats of the top 11 best male tennis players
-type: hacks
+type: tangibles
 courses: { compsci: {week: 2} }
 ---
 
