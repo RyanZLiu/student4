@@ -51,6 +51,67 @@ I thoroughly enjoyed this class, especially exploring various coding techniques,
 
 Looking ahead to trimester two, my goals include meeting new people, acquiring additional coding skills, refining my coding proficiency, delving deeper into API work, and enhancing integration techniques. I aim to learn how to collaborate effectively in new teams, explore innovative coding and agile methodologies, and ensure another rewarding trimester in AP CSP. If I'm up for a challenge, I'm thinking about exploring the backend to see firsthand what it's like and understand the differences between the frontend and backend. I know writing backend code will be tricky for me, since I am a beginner python coder, but from this experience I am sure that I will improve immensely. 
 
+# N@TM Extra Credit
+
+**Stockify**
+
+USAGE OF:
+- Frontend
+- Backend
+- API
+- Agile
+
+HOOK:
+Reason: I really loved the way they expalined the site as well as their user interface, it was very unique and alien like which was really cool!
+
+KNOWLEDGE (3.6-4):
+Reason: All of them seemed to knwo what they were doing and how each part of the code worked as well. Well done!
+
+VALUE (0.6-1.0):
+Reason: I feel like the value for this project most likely comes from how each of the code was outputted, like the data after each input as well as their user id that they used.
+
+WOW FACTOR:
+Comments: I really like the green black neon ish color of the overall website, it added a very cool effect and look!.
+
+**Ian Wu's Group**
+
+USAGE OF:
+- Frontend
+- Backend
+- API
+- Agile
+
+HOOK:
+Reason: I really loved their pixelated images website, how each image can be pixalated into a different one or color, really cool!
+
+KNOWLEDGE (3.6-4):
+Reason: Everyone seemed to know what the code was about and how it worked, well done!
+
+VALUE (0.6-1.0):
+Reason: I feel like the value of the assignment was mainly the way they explained the code so that i was easy for everyone to understand
+
+WOW FACTOR:
+Comments: The wow factor for this assignement was most probably again their pixalated image sequence how an image can be pixaleted into a different one or a new color etc.
+
+**Facial Emotions Regonizer**
+
+USAGE OF:
+- Frontend
+- Backend
+- API
+- Agile
+
+HOOK:
+Reason: This was by far one of the best projects i have ever seen. THhe way the the program could easily reconize the emotion jsut by looking at the facial expression weas just outstanding, really well done project!
+
+KNOWLEDGE (3.6-4)::
+Reason: Everyone seemd to know how the code works
+
+VALUE (0.6-1.0)::
+Reason: The whole project probably added value, the way it could recognize the emotion by mapping the facial expression, this was honestly out of the world.
+
+WOW FACTOR:
+Comments: The whole project is itself a wow factor!!! Really well done.
 
 
 
