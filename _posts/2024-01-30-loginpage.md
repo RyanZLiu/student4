@@ -1,3 +1,52 @@
+<style>
+    form {
+        max-width: 250px; /* Adjust the width as needed */
+        margin: 0 auto; /* Center the form on the page */
+        box-shadow: 0 0 10px rgba(0, 150, 3, 0.7); /* Box shadow for a subtle effect */
+        padding: 19px;
+        border-radius: 10px; /* Add rounded corners for a modern look */
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        box-shadow: inset 0 0 5px rgba(0, 0.2, 0, 0); /* Inner glow effect for input fields */
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        transition: box-shadow 0.3s ease; /* Add transition for a smooth effect */
+    }
+
+    input:focus {
+        outline: none; /* Remove default focus outline */
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.2); /* Change box shadow on focus for emphasis */
+    }
+
+    button {
+        background-color: #FFA500;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(0, 128, 3, 0.5); /* Box shadow for the button */
+        transition: box-shadow 0.3s ease; /* Add transition for a smooth effect */
+    }
+
+    button:hover {
+        box-shadow: 0 0 15px rgba(0, 150, 0, 1); /* Change box shadow on hover for emphasis */
+    }
+</style>
+
+<!-- Your existing HTML form goes here -->
+<!-- <form action="javascript:login_user()">
+    <!-- ... -->
+<!-- </form>
+
+<script type="module">
+    // Your existing JavaScript code goes here
+</script> -->
+
 <form action="javascript:login_user()">
     <p><label>
         User ID:
@@ -20,9 +69,10 @@ The script defines a function when the page loads. This function is triggered wh
 <script type="module">
     // uri variable and options object are obtained from config.js
 
+
     function login_user(){
         // Set Authenticate endpoint
-        const url = 'http://127.0.0.1:8086/api/users/authenticate';
+        const url ='http://127.0.0.1:8086/api/users/authenticate';
 
         // Set the body of the request to include login data from the DOM
         const body = {
@@ -49,14 +99,17 @@ The script defines a function when the page loads. This function is triggered wh
             if (!response.ok) {
                 const errorMsg = 'Login error: ' + response.status;
                 console.log(errorMsg);
+                alert("wrong login info")
                 return;
             }
             // Success!!!
             // Redirect to the database page
-            window.location.href = "http://127.0.0.1:4200/student4/2024/01/30/datatable.html";
+            window.location.href = "http://127.0.0.1:4200/student4/2024/01/30/datatable.html"
+            ;
         })
         // catch fetch errors (ie ACCESS to server blocked)
         .catch(err => {
+
             console.error(err);
         });
     }

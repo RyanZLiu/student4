@@ -30,7 +30,7 @@
             // check for response errors and display
             if (response.status !== 200) {
                 const errorMsg = 'Database response error: ' + response.status;
-                window.location.href = "/csp-blog/403.html";
+                window.location.href = "http://127.0.0.1:4200/student4/2024/01/31/401error.html";
                 console.log(errorMsg);
                 const tr = document.createElement("tr");
                 const td = document.createElement("td");
@@ -65,6 +65,122 @@
                 td.innerHTML = err + ": " + url;
                 tr.appendChild(td);
                 resultContainer.appendChild(tr);
+            ;
             });
         });
+</script>
+
+<label for="myTextField">Enter the UID you want to delete</label>
+<input type="text" id="duid" name="duid">
+
+<button onclick="deleteUser()">Delete Account</button>
+
+
+
+<script>
+    function deleteUser() {
+        // You can add your logic for deleting the user here
+        console.log("in function");
+        const body = {
+            uid: document.getElementById("duid").value,
+            };
+        const url = 'http://127.0.0.1:8086/api/users/';
+        const options = {
+            mode: 'cors', // no-cors, cors, same-origin
+            credentials: 'include', // include, same-origin, omit
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'DELETE', // Override the method property
+            cache: 'no-cache', // Set the cache property
+            body: JSON.stringify(body)
+        };
+        fetch(url, options)
+        // response is a RESTful "promise" on any successful fetch
+        .then(response => {
+            // check for response errors and display
+            if (response.status !== 200) {
+                const errorMsg = 'Database response error: ' + response.status;
+                window.location.href = "http://127.0.0.1:4200/student4/2024/01/31/401error.html";
+                console.log(errorMsg);
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+                td.innerHTML = errorMsg;
+                tr.appendChild(td);
+                resultContainer.appendChild(tr);
+                return;
+            }
+            // valid response will contain JSON data
+            response.json().then(data => {
+                console.log("worked");
+                console.log(data);
+                 window.location.href = "http://127.0.0.1:4200/student4/2024/01/30/datatable.html";
+            })
+            // catch fetch errors (i.e., ACCESS to server blocked)
+            .catch(err => {
+                console.error(err);
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+                td.innerHTML = err + ": " + url;
+                tr.appendChild(td);
+                resultContainer.appendChild(tr);
+            ;
+            });
+        });
+
+        
+    }
+</script>
+
+<label for="myTextField">Enter UID for user reference</label>
+<input type="text" id="uid" name="uid">
+
+<label for="myTextField">Enter the new Password</label>
+<input type="text" id="password" name="password">
+
+<label for="myTextField">Enter the new name</label>
+<input type="text" id="name" name="name">
+
+<button type="button" onclick="update_user()">Update Account</button>
+
+
+<script>
+    function update_user(){
+      const url = 'http://127.0.0.1:8086/api/users/';
+      const body = {
+        uid: document.getElementById("uid").value,
+        password: document.getElementById("password").value,
+        name: document.getElementById("name").value,
+      };
+      console.log(body);
+      const AuthOptions = {
+                  mode: 'cors', // no-cors, *cors, same-origin
+                  credentials: 'include', // include, same-origin, omit
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  method: 'PUT', // Override the method property
+                  cache: 'no-cache', // Set the cache property
+                  body: JSON.stringify(body)
+              };
+        // fetch the API
+        fetch(url, AuthOptions)
+          // response is a RESTful "promise" on any successful fetch
+          .then(response => {
+            // check for response errors and display
+            if (response.status !== 200) {
+                window.location.href = "http://127.0.0.1:4200/student4/2024/01/31/401error.html";
+            }
+            // valid response will contain JSON data
+            response.json().then(data => {
+              // insert whatever code you want here
+              window.location.href="http://127.0.0.1:4200/student4/2024/01/30/datatable.html"; // reload pge
+            })
+        })
+        // catch fetch errors (ie ACCESS to server blocked)
+        .catch(err => {
+          console.log(err)
+        });
+    }
+    window.update_user = update_user;
 </script>
