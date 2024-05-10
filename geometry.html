@@ -1,0 +1,102 @@
+---
+layout: base
+permalink: /geometry/
+title: Expenses
+search_exclude: true
+---
+
+<!-- Setting up the basic title, headings, and information/directions that users should know before working with the program -->
+<html lang="en">
+<head>
+    <title>Find Area Using Shoelace Theorem</title>
+</head>
+<body>
+    <h1>Find Area Using Shoelace Theorem</h1>
+    <h2>Note: Coordinates of vertices must be entered in clockwise order.</h2>
+
+<!-- Setting up the text boxes for users to input their X, Y coordinates. When the single submit button is clicked, the addcoordinate function is called -->
+
+    <form id="XInputs">
+        <label for="xcoordinate">Enter an X Coordinate:</label>
+        <input type="number" id="xcoordinate" name="X" step="0.01">
+    </form>
+    <form id="XInputs">
+        <label for="ycoordinate">Enter an Y Coordinate:</label>
+        <input type="number" id="ycoordinate" name="Y" step="0.01">
+    </form>
+    <form>
+        <input type="button" value="Submit" onclick="addcoordinate()">
+    </form>
+    <!-- Setting up the Coordinate Table where the user inputted X, Y coordinates will be displayed -->
+    <h3><u>(x,y) Coordinate Table</u></h3> 
+    <table id="coordinatesTable">
+        <thead>
+            <tr>
+                <th>(X,</th>
+                <th>Y)</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <!-- Displaying the final area of the shape -->
+    <p id="totalarea">The area of your polygon is 0.00</p>
+
+    <script>
+    /* Setting up two lists. One to keep track of all of the X coordinates (xcoords), the other to keep track of all of the Y coordinates (ycoords). */
+        var xcoords = []
+        var ycoords = []
+    /* addcoordinate function which takes the user input from the text boxes/forms and pushes the x coordinate into the xcoords list and the y coordinate into the ycoords list if both user inputs are numbers and if both user inputs are given for each coordinate*/ 
+        function addcoordinate() {
+            UserX = parseFloat(document.getElementById("xcoordinate").value)
+            UserY = parseFloat(document.getElementById("ycoordinate").value)
+            if (!isNaN(UserX) && !isNaN(UserY)) {
+                xcoords.push(UserX)
+                ycoords.push(UserY)
+                console.log(UserX, UserY, xcoords, ycoords)
+                updateTable() //calling the updateTable function for every coordinate submitted
+                area() //calling the area function for every coordinate submitted
+            }
+            else {
+                alert("Please enter your coordinate.") 
+                /* alert message if both user inputs aren't numbers or if both user inputs aren't given for each coordinate */
+            }
+        }
+        /*updateTable function which takes the xcoords and ycoords list and displays them into an organized table that displays the user inputed (x,y) coordinates)*/
+        function updateTable() {
+            /* selects the first <tbody> element from the HTML table with the id "coordinatesTable" as the location to add the (x,y) coordinates into */
+            var table = document.getElementById("coordinatesTable").getElementsByTagName("tbody")[0];
+             
+            table.innerHTML = ""; // clears the old table before adding the updated table
+            for (var i = 0; i < xcoords.length; i++) { 
+                // for every coordinate entered, create a new row with 2 new cells for each x, y coordinate
+                var newRow = table.insertRow();
+                var newX = newRow.insertCell(0);
+                var newY = newRow.insertCell(1);
+                newX.textContent = "‍ ‍ (" + xcoords[i] + ",‍ ‍ "
+                newY.textContent = "‍‍  " + ycoords[i] + ")"
+
+            }
+
+        }
+        // area function which takes the x coordinates and the y coordinates and uses them to calculate the area of the polygon
+        function area() {
+            // algorithm for calculating the area of the polygon through for loops and iteration.                                                            
+            var area1 = 0
+            for (var j = 0; j < xcoords.length-1; j++) {
+                area1 += xcoords[j] * ycoords[j+1];
+            }
+            area1 += xcoords[xcoords.length-1] * ycoords[0]
+            var area2 = 0
+            for (var k = 0; k < xcoords.length-1; k++) {
+                area2 += ycoords[k] * xcoords[k+1];
+            }
+            area2 += ycoords[ycoords.length-1] * xcoords[0];
+            var totalArea = 0.5*(Math.abs(area1-area2))
+            // print out final calculated area
+            document.getElementById("totalarea").textContent = "The area of your polygon is " + totalArea;
+
+        }
+
+    </script>
+</body>

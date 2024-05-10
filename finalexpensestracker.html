@@ -1,0 +1,120 @@
+---
+layout: base
+permalink: /final/
+title: Expenses
+search_exclude: true
+---
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+</head>
+<body>
+    <h1>Expense Tracker</h1>
+
+    <form id="ExpensesInputs">
+        <label for="expensequantity">Enter an Expense:</label>
+        <input type="number" id="expensequantity" name="expenseamounts" step="0.01">
+        <input type="button" value="Submit" onclick="addExpense()"> 
+    </form>
+
+    <table id="expensesTable">
+        <caption> Your Expenses Table</caption>
+        <thead>
+            <tr>
+                <th>Index</th>
+                <th>Expense</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+    
+        </tbody>
+    </table>
+
+    <p id="totalexpense">Total Expenses: $0.00</p>
+
+    <script>
+        var expenses = []
+
+        function addExpense() {
+            var amount = parseFloat(document.getElementById("expensequantity").value)
+            if (amount > 0) {
+                expenses.push(amount);
+                addExpensetoTable()
+                totalExpenses()
+                alert("Your expense of $" + amount + " is added. Press 'Ok' to continue.")
+            }
+            else {
+                alert("Please enter a positive number");
+            }
+        }
+
+        function addExpensetoTable(){
+            var table = document.getElementById("expensesTable").getElementsByTagName("tbody")[0];
+            table.innerHTML = "";
+            for (var i=0;i< expenses.length; i++) {
+                var addRow = table.insertRow();
+                var addIndex = addRow.insertCell(0);
+                var addExpenses = addRow.insertCell(1);
+                var addOptions = addRow.insertCell(2);
+                addIndex.textContent = i+1;
+                addExpenses.textContent = "$" + expenses[i];
+                
+                var editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.addEventListener('click', function(index) {
+                    return function() {
+                        editExpense(index);
+                    };
+                }(i));
+                addOptions.appendChild(editButton); 
+
+
+
+                var deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', function(index) {
+                    return function() {
+                        deleteExpense(index);
+                    };
+                }(i));
+                addOptions.appendChild(deleteButton); 
+            }
+        }
+
+        function totalExpenses(){
+            var Total = 0;
+            for (var j=0;j< expenses.length; j++) {
+                Total += expenses[j]
+            }
+            document.getElementById("totalexpense").textContent = "Total Expenses: $"+Total;
+        }
+
+        function editExpense(i) {
+            var newexpense = parseFloat(prompt("What is your new expense?"));
+            if (newexpense > 0 && !isNaN(newexpense) && newexpense !== null && newexpense !== expenses[i]) {
+                expenses[i] = newexpense;
+                addExpensetoTable();
+                totalExpenses();
+                alert("Success!");
+            } 
+
+            else if (newexpense === expenses[i]) {
+                alert("Please enter a number that is different from your original.");
+            } 
+            
+            else {
+                alert("Please enter a positive number.");
+            }
+        }
+        
+        function deleteExpense(i) {
+            expenses.splice(i,1);
+            addExpensetoTable();
+            totalExpenses();
+        }
+    </script>
+</body>
+</html>
