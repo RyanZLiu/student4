@@ -114,7 +114,7 @@ courses: {'compsci': {'week': 18}}
 ![image](https://github.com/RyanZLiu/student4/assets/142445209/574abcd0-919a-4aec-b55b-8b08654eaf0c)
 
  - In JavaScript code, show and describe code that handles success. Describe how code shows success to the user in the Chrome Browser screen.
-  - The screenshot shows the browser showing a successful result by alerting the user that the design was svaed.
+  - The screenshot shows the browser showing a successful result by alerting the user that the design was saved.
 
 
 ![image](https://github.com/RyanZLiu/student4/assets/142445209/b4fdd394-8c07-4094-8204-4b0785a2a42a)
