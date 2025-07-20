@@ -25,7 +25,7 @@ search_exclude: true
   <label>Y: <input type="number" id="ycoordinate" step="0.01"></label>
   <button onclick="addcoordinate()">Submit</button>
 
-  <h3>📋 Coordinate Table</h3>
+  <h3>Coordinate Table</h3>
   <table id="coordinatesTable">
     <thead><tr><th>X</th><th>Y</th></tr></thead>
     <tbody></tbody>
@@ -79,25 +79,42 @@ search_exclude: true
     }
 
     function updateGraph() {
-      var trace = {
-        x: xcoords,
-        y: ycoords,
-        mode: 'markers+lines',
-        fill: xcoords.length >= 3 ? 'toself' : 'none',
+      // 1) build closed‐polygon arrays
+      let xPlot = xcoords.slice();
+      let yPlot = ycoords.slice();
+
+      // if we have at least one point, append the first point again
+      if (xcoords.length > 0) {
+        xPlot.push(xcoords[0]);
+        yPlot.push(ycoords[0]);
+      }
+
+      // 2) create the trace with fill:'toself' for 3+ points
+      const trace = {
+        x:       xPlot,
+        y:       yPlot,
+        mode:    'lines+markers',
+        fill:    xcoords.length >= 3 ? 'toself' : 'none',
         fillcolor: 'rgba(173,216,230,0.5)',
-        marker: { size: 8, color: 'red' },
-        line:   { color: '#007acc' }
+        marker:  { size: 8, color: 'red' },
+        line:    { color: '#007acc' }
       };
 
-      var layout = {
+      // 3) numbered/grid axes + pan/zoom
+      const layout = {
         xaxis: { title: 'X', zeroline: true, showgrid: true, gridcolor: '#ddd' },
         yaxis: { title: 'Y', zeroline: true, showgrid: true, gridcolor: '#ddd' },
         dragmode: 'pan',
         hovermode: 'closest'
       };
 
-      Plotly.react('plot', [trace], layout, {responsive: true});
+      // 4) redraw the entire plot
+      Plotly.newPlot('plot', [trace], layout, {
+        responsive: true,
+        scrollZoom: true    // enable wheel‐to‐zoom
+      });
     }
+
 
     // initialize empty plot
     updateGraph();
