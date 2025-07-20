@@ -99,31 +99,71 @@ search_exclude: true
         }
 
         function updateGraph() {
-            // clear
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             if (xcoords.length === 0) return;
 
-            // compute bounding box + padding
-            var minX = Math.min.apply(null, xcoords),
-                maxX = Math.max.apply(null, xcoords),
-                minY = Math.min.apply(null, ycoords),
-                maxY = Math.max.apply(null, ycoords);
+            var minX = Math.min(...xcoords),
+                maxX = Math.max(...xcoords),
+                minY = Math.min(...ycoords),
+                maxY = Math.max(...ycoords);
             var dx = maxX - minX, dy = maxY - minY;
-            var pad = Math.max(dx, dy) * 0.1 || 1;  // 10% padding, or 1 if degenerate
+            var pad = Math.max(dx, dy) * 0.1 || 1;
 
-            // compute scale to fit into canvas
+            // scales
             var scaleX = canvas.width  / (dx + 2*pad),
                 scaleY = canvas.height / (dy + 2*pad);
 
-            // helper: map data → canvas coords
-            function mapX(x) {
-            return (x - (minX - pad)) * scaleX;
+            // map data→pixel
+            function mapX(x){ return (x - (minX - pad)) * scaleX; }
+            function mapY(y){ return canvas.height - (y - (minY - pad)) * scaleY; }
+
+            // --- draw axes at x=0 and y=0 if visible ---
+            ctx.save();
+            ctx.strokeStyle = "#444";
+            ctx.lineWidth = 1;
+
+            // horizontal axis (y=0)
+            if (0 >= minY - pad && 0 <= maxY + pad) {
+            var y0 = mapY(0);
+            ctx.beginPath();
+            ctx.moveTo(0,   y0);
+            ctx.lineTo(canvas.width, y0);
+            ctx.stroke();
             }
-            function mapY(y) {
-            // flip Y so larger y is toward top of canvas
-            return canvas.height - (y - (minY - pad)) * scaleY;
+            // vertical axis (x=0)
+            if (0 >= minX - pad && 0 <= maxX + pad) {
+            var x0 = mapX(0);
+            ctx.beginPath();
+            ctx.moveTo(x0, 0);
+            ctx.lineTo(x0, canvas.height);
+            ctx.stroke();
             }
+            ctx.restore();
+
+            // --- shade & stroke polygon when 3+ points ---
+            if (xcoords.length >= 3) {
+                ctx.beginPath();
+                ctx.moveTo(mapX(xcoords[0]), mapY(ycoords[0]));
+                for (var i = 1; i < xcoords.length; i++) {
+                    ctx.lineTo(mapX(xcoords[i]), mapY(ycoords[i]));
+                }
+                ctx.closePath();
+                ctx.fillStyle   = "rgba(173,216,230,0.5)";
+                ctx.fill();
+                ctx.strokeStyle = "#007acc";
+                ctx.stroke();
+            }
+
+            // --- draw points ---
+            ctx.fillStyle = "#cc0000";
+            for (var i = 0; i < xcoords.length; i++) {
+                var cx = mapX(xcoords[i]), cy = mapY(ycoords[i]);
+                ctx.beginPath();
+                ctx.arc(cx, cy, 4, 0, 2*Math.PI);
+                ctx.fill();
+            }
+        }
+
 
             // draw and fill the polygon if 3+ points
             if (xcoords.length >= 3) {
