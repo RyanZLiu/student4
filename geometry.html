@@ -13,29 +13,53 @@ search_exclude: true
   <style>
     body { font-family: sans-serif; padding: 1em; }
     input, button { margin: .2em; }
-    table { border-collapse: collapse; margin-top: .5em; }
-    th, td { border:1px solid #ccc; padding:4px 8px; }
+
+    /* Layout containers */
+    .container { display: flex; align-items: flex-start; gap: 2em; margin-top: 1em; }
+    .left-panel, .right-panel { flex: 1; }
+
+    /* Coordinate table styling */
+    table { border-collapse: collapse; width: 100%; margin-top: .5em; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #007acc; color: #fff; }
+    tbody tr:nth-child(odd) { background-color: #f9f9f9; }
+
+    /* Stats styling */
+    #stats p { margin: .5em 0; font-weight: bold; }
+
+    /* Plot container */
+    #plot { width: 100%; height: 600px; }
   </style>
 </head>
 <body>
   <h1>Find Area Using Shoelace Theorem</h1>
-  <h2>Enter in **clockwise** order</h2>
+  <h2>Enter in <strong>clockwise</strong> order</h2>
 
-  <label>X: <input type="number" id="xcoordinate" step="0.01"></label>
-  <label>Y: <input type="number" id="ycoordinate" step="0.01"></label>
-  <button onclick="addcoordinate()">Submit</button>
+  <div class="container">
+    <!-- Left side: inputs & table -->
+    <div class="left-panel">
+      <div class="inputs">
+        <label>X: <input type="number" id="xcoordinate" step="0.01"></label>
+        <label>Y: <input type="number" id="ycoordinate" step="0.01"></label>
+        <button onclick="addcoordinate()">Submit</button>
+      </div>
 
-  <h3>Coordinate Table</h3>
-  <table id="coordinatesTable">
-    <thead><tr><th>X</th><th>Y</th></tr></thead>
-    <tbody></tbody>
-  </table>
+      <h3>Coordinate Table</h3>
+      <table id="coordinatesTable">
+        <thead><tr><th>X</th><th>Y</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
-  <p id="totalarea">The area of your polygon is 0.00</p>
-  <p id="perimeter">The perimeter of your polygon is 0.00</p>
-
-  <!-- Plotly graph -->
-  <div id="plot" style="width:600px; height:600px; margin-top:1em;"></div>
+    <!-- Right side: stats & plot -->
+    <div class="right-panel">
+      <div id="stats">
+        <p id="totalarea">The area of your polygon is 0.00</p>
+        <p id="perimeter">The perimeter of your polygon is 0.00</p>
+      </div>
+      <div id="plot"></div>
+    </div>
+  </div>
 
   <script>
     var xcoords = [], ycoords = [];
@@ -48,20 +72,17 @@ search_exclude: true
       }
       xcoords.push(X);
       ycoords.push(Y);
-      updateTable();
-      computeArea();
-      computePerimeter();
-      updateGraph();
+      updateTable(); computeArea(); computePerimeter(); updateGraph();
     }
 
     function updateTable() {
       var tbody = document.querySelector("#coordinatesTable tbody");
       tbody.innerHTML = "";
-      for (var i = 0; i < xcoords.length; i++) {
+      xcoords.forEach((x, i) => {
         var tr = document.createElement("tr");
-        tr.innerHTML = "<td>" + xcoords[i] + "</td><td>" + ycoords[i] + "</td>";
+        tr.innerHTML = `<td>${x}</td><td>${ycoords[i]}</td>`;
         tbody.appendChild(tr);
-      }
+      });
     }
 
     function computeArea() {
@@ -75,7 +96,7 @@ search_exclude: true
         a1 += xcoords[xcoords.length-1] * ycoords[0];
         a2 += ycoords[ycoords.length-1] * xcoords[0];
         var area = 0.5 * Math.abs(a1 - a2);
-        areaText = "The area of your polygon is " + area.toFixed(2);
+        areaText = `The area of your polygon is ${area.toFixed(2)}`;
       }
       document.getElementById("totalarea").textContent = areaText;
     }
@@ -84,7 +105,6 @@ search_exclude: true
       let peri = 0;
       if (xcoords.length >= 2) {
         for (let i = 0; i < xcoords.length; i++) {
-          // next index, wrapping around
           const j = (i + 1) % xcoords.length;
           const dx = xcoords[j] - xcoords[i];
           const dy = ycoords[j] - ycoords[i];
@@ -92,63 +112,20 @@ search_exclude: true
         }
       }
       document.getElementById("perimeter").textContent =
-        "The perimeter of your polygon is " + peri.toFixed(2);
+        `The perimeter of your polygon is ${peri.toFixed(2)}`;
     }
 
-
     function updateGraph() {
-      // build the closed‑polygon coords
-      const xPlot = xcoords.slice(), yPlot = ycoords.slice();
+      const xPlot = [...xcoords];
+      const yPlot = [...ycoords];
       if (xcoords.length) {
-        xPlot.push(xcoords[0]);
-        yPlot.push(ycoords[0]);
+        xPlot.push(xcoords[0]); yPlot.push(ycoords[0]);
       }
-
-      // 1) pure fill trace (no lines)
-      const fillTrace = {
-        x:         xPlot,
-        y:         yPlot,
-        mode:      'none',                   // no markers or lines here
-        fill:      xcoords.length >= 3 ? 'toself' : 'none',
-        fillcolor: 'rgba(173,216,230,0.5)',
-        hoveron:   'fills',                  // only trigger on the interior
-        name:      'polygon',                // your custom name
-        hovertemplate: '<extra>%{trace.name}</extra>',
-        showlegend: false
-      };
-
-      // 2) border trace (lines only, no hover)
-      const borderTrace = {
-        x:         xPlot,
-        y:         yPlot,
-        mode:      'lines',
-        line:      { color: '#007acc' },
-        hoverinfo: 'skip',                   // disable hover on the border
-        showlegend: false
-      };
-
-      // 3) point trace (markers only)
-      const pointTrace = {
-        x:         xcoords,
-        y:         ycoords,
-        mode:      'markers',
-        marker:    { size: 12, color: 'red' },  // bigger size = easier to hover
-        hovertemplate: '(%{x}, %{y})<extra></extra>',
-        showlegend: false
-      };
-
-      // layout with closest hovermode
-      const layout = {
-        xaxis:    { title: 'X', zeroline: true, showgrid: true, gridcolor: '#ddd' },
-        yaxis:    { title: 'Y', zeroline: true, showgrid: true, gridcolor: '#ddd' },
-        dragmode: 'pan',
-        hovermode:'closest'                 // always pick the point you're directly over
-      };
-
-      Plotly.newPlot('plot', [fillTrace, borderTrace, pointTrace], layout, {
-        responsive: true,
-        scrollZoom: true
-      });
+      const fillTrace = { x: xPlot, y: yPlot, mode: 'none', fill: xcoords.length >= 3 ? 'toself' : 'none', fillcolor: 'rgba(173,216,230,0.5)', hoveron: 'fills', name: 'polygon', hovertemplate: '<extra>%{trace.name}</extra>', showlegend: false };
+      const borderTrace = { x: xPlot, y: yPlot, mode: 'lines', line: { color: '#007acc' }, hoverinfo: 'skip', showlegend: false };
+      const pointTrace = { x: xcoords, y: ycoords, mode: 'markers', marker: { size: 12, color: 'red' }, hovertemplate: '(%{x}, %{y})<extra></extra>', showlegend: false };
+      const layout = { xaxis: { title: 'X', zeroline: true, showgrid: true, gridcolor: '#ddd' }, yaxis: { title: 'Y', zeroline: true, showgrid: true, gridcolor: '#ddd' }, dragmode: 'pan', hovermode: 'closest' };
+      Plotly.newPlot('plot', [fillTrace, borderTrace, pointTrace], layout, { responsive: true, scrollZoom: true });
     }
 
     // initialize empty plot
