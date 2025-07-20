@@ -91,14 +91,16 @@ search_exclude: true
 
       // 2) create the trace with fill:'toself' for 3+ points
       const trace = {
-        x:       xPlot,
-        y:       yPlot,
-        mode:    'lines+markers',
-        fill:    xcoords.length >= 3 ? 'toself' : 'none',
+        x:    xPlot,
+        y:    yPlot,
+        mode: 'lines+markers',
+        hovertemplate: '(%{x}, %{y})<extra></extra>',
+        fill: xcoords.length>=3?'toself':'none',
         fillcolor: 'rgba(173,216,230,0.5)',
-        marker:  { size: 8, color: 'red' },
-        line:    { color: '#007acc' }
+        marker: { size: 8, color: 'red' },
+        line:   { color: '#007acc' }
       };
+
 
       // 3) numbered/grid axes + pan/zoom
       const layout = {
