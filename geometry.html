@@ -5,6 +5,7 @@ title: Expenses
 search_exclude: true
 ---
 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -180,7 +181,34 @@ search_exclude: true
       const fillTrace = { x: xPlot, y: yPlot, mode: 'none', fill: xcoords.length >= 3 ? 'toself' : 'none', fillcolor: 'rgba(173,216,230,0.5)', hoveron: 'fills', name: 'polygon', hovertemplate: '<extra>%{trace.name}</extra>', showlegend: false };
       const borderTrace = { x: xPlot, y: yPlot, mode: 'lines', line: { color: '#ffffff' }, hoverinfo: 'skip', showlegend: false };
       const pointTrace = { x: xcoords, y: ycoords, mode: 'markers', marker: { size: 12, color: 'red' }, hovertemplate: '(%{x}, %{y})<extra></extra>', showlegend: false };
-      const layout = { paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', xaxis: { title: 'X', zeroline: true, showgrid: true, gridcolor: 'rgba(255,255,255,0.2)' }, yaxis: { title: 'Y', zeroline: true, showgrid: true, gridcolor: 'rgba(255,255,255,0.2)' }, dragmode: 'pan', hovermode: 'closest' };
+      const layout = {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        xaxis: {
+          title: { text: 'X', font: { color: '#fff' } },
+          zeroline: true,
+          zerolinecolor: 'rgba(255,255,255,0.5)',
+          showgrid: true,
+          gridcolor: 'rgba(255,255,255,0.2)',
+          showline: true,
+          linecolor: '#fff',
+          tickcolor: '#fff',
+          tickfont: { color: '#fff' }
+        },
+        yaxis: {
+          title: { text: 'Y', font: { color: '#fff' } },
+          zeroline: true,
+          zerolinecolor: 'rgba(255,255,255,0.5)',
+          showgrid: true,
+          gridcolor: 'rgba(255,255,255,0.2)',
+          showline: true,
+          linecolor: '#fff',
+          tickcolor: '#fff',
+          tickfont: { color: '#fff' }
+        },
+        dragmode: 'pan',
+        hovermode: 'closest'
+      };
       Plotly.newPlot('plot', [fillTrace, borderTrace, pointTrace], layout, { responsive: true, scrollZoom: true });
     }
 
