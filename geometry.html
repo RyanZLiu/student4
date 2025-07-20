@@ -1,127 +1,154 @@
-<!-- … your existing front‑matter … -->
+---
+layout: base
+permalink: /geometry/
+title: Expenses
+search_exclude: true
+---
+
+<!-- Setting up the basic title, headings, and information/directions that users should know before working with the program -->
 <html lang="en">
 <head>
-  <title>Find Area Using Shoelace Theorem</title>
-  <!-- 1) Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    #chartContainer { width: 600px; height: 400px; margin: 1em auto; }
-  </style>
+    <title>Find Area Using Shoelace Theorem</title>
 </head>
 <body>
-  <h1>Find Area Using Shoelace Theorem</h1>
-  <!-- … your forms and table as before … -->
+    <h1>Find Area Using Shoelace Theorem</h1>
+    <h2>Note: Coordinates of vertices must be entered in clockwise order.</h2>
 
-  <!-- 2) Canvas for the plot -->
-  <div id="chartContainer">
-    <canvas id="chartCanvas"></canvas>
-  </div>
+<!-- Setting up the text boxes for users to input their X, Y coordinates. When the single submit button is clicked, the addcoordinate function is called -->
 
-  <p id="totalarea">The area of your polygon is 0.00</p>
+    <form id="XInputs">
+        <label for="xcoordinate">Enter an X Coordinate:</label>
+        <input type="number" id="xcoordinate" name="X" step="0.01">
+    </form>
+    <form id="XInputs">
+        <label for="ycoordinate">Enter an Y Coordinate:</label>
+        <input type="number" id="ycoordinate" name="Y" step="0.01">
+    </form>
+    <form>
+        <input type="button" value="Submit" onclick="addcoordinate()">
+    </form>
+    <!-- Setting up the Coordinate Table where the user inputted X, Y coordinates will be displayed -->
+    <h3><u>(x,y) Coordinate Table</u></h3> 
+    <table id="coordinatesTable">
+        <thead>
+            <tr>
+                <th>(X,</th>
+                <th>Y)</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <!-- Displaying the final area of the shape -->
+    <p id="totalarea">The area of your polygon is 0.00</p>
 
-  <script>
-    // your existing X/Y arrays
-    const xcoords = [], ycoords = [];
+    <canvas id="plotCanvas" width="400" height="400"
+            style="border:1px solid #ccc; margin-top:1em;">
+    </canvas>
 
-    // 3) Initialize the Chart.js scatter chart
-    const ctx = document.getElementById('chartCanvas').getContext('2d');
-    const chart = new Chart(ctx, {
-      type: 'scatter',
-      data: {
-        datasets: [
-          {
-            label: 'Points',
-            data: [],              // will be [{ x:…, y:… }, …]
-            pointBackgroundColor: 'black',
-            showLine: false,
-          },
-          {
-            label: 'Polygon',
-            data: [],              // same format
-            showLine: true,
-            fill: true,
-            backgroundColor: 'rgba(173,216,230,0.4)',
-            borderColor: 'steelblue',
-            borderWidth: 1,
-          }
-        ]
-      },
-      options: {
-        animation: false,
-        scales: {
-          x: { type: 'linear', position: 'bottom' },
-          y: { type: 'linear' }
+    <script>
+        var xcoords = [];
+        var ycoords = [];
+
+        // get our canvas and 2D context once
+        var canvas = document.getElementById("plotCanvas");
+        var ctx    = canvas.getContext("2d");
+
+        function addcoordinate() {
+            var UserX = parseFloat(document.getElementById("xcoordinate").value);
+            var UserY = parseFloat(document.getElementById("ycoordinate").value);
+            if (!isNaN(UserX) && !isNaN(UserY)) {
+                xcoords.push(UserX);
+                ycoords.push(UserY);
+                updateTable();
+                area();
+                updateGraph();   // ← redraw graph
+            } else {
+                alert("Please enter both an X and a Y coordinate!");
+            }
         }
-      }
-    });
 
-    function addcoordinate() {
-      const UserX = parseFloat(document.getElementById("xcoordinate").value),
-            UserY = parseFloat(document.getElementById("ycoordinate").value);
-      if (!isNaN(UserX) && !isNaN(UserY)) {
-        xcoords.push(UserX);
-        ycoords.push(UserY);
-        updateTable();
-        area();
-        updateChart();    // <-- redraw your chart
-      } else {
-        alert("Please enter both X and Y as numbers.");
-      }
-    }
+        function updateTable() {
+            var tableBody = document
+            .getElementById("coordinatesTable")
+            .getElementsByTagName("tbody")[0];
+            tableBody.innerHTML = "";
+            for (var i = 0; i < xcoords.length; i++) {
+                var row = tableBody.insertRow();
+                row.insertCell(0).textContent = "(" + xcoords[i] + ",";
+                row.insertCell(1).textContent =        ycoords[i] + ")";
+            }
+        }
 
-    function updateTable() {
-      const table = document.querySelector("#coordinatesTable tbody");
-      table.innerHTML = "";
-      for (let i = 0; i < xcoords.length; i++) {
-        const row = table.insertRow();
-        row.insertCell(0).textContent = `(${xcoords[i]},`;
-        row.insertCell(1).textContent = `${ycoords[i]})`;
-      }
-    }
+        function area() {
+            if (xcoords.length < 3) {
+                document.getElementById("totalarea")
+                        .textContent = "The area of your polygon is 0.00";
+                return;
+            }
+            var a1 = 0, a2 = 0;
+            for (var j = 0; j < xcoords.length - 1; j++) {
+                a1 += xcoords[j] * ycoords[j+1];
+                a2 += ycoords[j] * xcoords[j+1];
+            }
+            a1 += xcoords[xcoords.length-1] * ycoords[0];
+            a2 += ycoords[ycoords.length-1] * xcoords[0];
+            var totalArea = 0.5 * Math.abs(a1 - a2);
+            document.getElementById("totalarea")
+                    .textContent = "The area of your polygon is " + totalArea.toFixed(2);
+        }
 
-    function area() {
-      let a1 = 0, a2 = 0;
-      for (let i = 0; i < xcoords.length - 1; i++) {
-        a1 += xcoords[i] * ycoords[i+1];
-        a2 += ycoords[i] * xcoords[i+1];
-      }
-      // close the loop
-      a1 += xcoords[xcoords.length-1] * ycoords[0];
-      a2 += ycoords[ycoords.length-1] * xcoords[0];
-      const totalArea = 0.5 * Math.abs(a1 - a2);
-      document.getElementById("totalarea").textContent =
-        `The area of your polygon is ${totalArea.toFixed(2)}`;
-    }
+        function updateGraph() {
+            // clear
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 4) updateChart will push new point, recompute bounds, and shade polygon
-    function updateChart() {
-      const ptsDataset = chart.data.datasets[0].data;
-      const polyDataset = chart.data.datasets[1].data;
+            if (xcoords.length === 0) return;
 
-      // add latest point
-      ptsDataset.push({ x: xcoords.at(-1), y: ycoords.at(-1) });
+            // compute bounding box + padding
+            var minX = Math.min.apply(null, xcoords),
+                maxX = Math.max.apply(null, xcoords),
+                minY = Math.min.apply(null, ycoords),
+                maxY = Math.max.apply(null, ycoords);
+            var dx = maxX - minX, dy = maxY - minY;
+            var pad = Math.max(dx, dy) * 0.1 || 1;  // 10% padding, or 1 if degenerate
 
-      // recompute axis limits with a small margin
-      const allX = xcoords.slice(), allY = ycoords.slice();
-      const xmin = Math.min(...allX), xmax = Math.max(...allX);
-      const ymin = Math.min(...allY), ymax = Math.max(...allY);
-      chart.options.scales.x.min = xmin - 0.5;
-      chart.options.scales.x.max = xmax + 0.5;
-      chart.options.scales.y.min = ymin - 0.5;
-      chart.options.scales.y.max = ymax + 0.5;
+            // compute scale to fit into canvas
+            var scaleX = canvas.width  / (dx + 2*pad),
+                scaleY = canvas.height / (dy + 2*pad);
 
-      // if ≥3, build & fill the closed polygon
-      if (xcoords.length >= 3) {
-        polyDataset.length = 0;  // clear it
-        xcoords.forEach((x,i) => polyDataset.push({ x, y: ycoords[i] }));
-        // close it by repeating the first
-        polyDataset.push({ x: xcoords[0], y: ycoords[0] });
-      } else {
-        polyDataset.length = 0;  // no fill until 3 points
-      }
+            // helper: map data → canvas coords
+            function mapX(x) {
+            return (x - (minX - pad)) * scaleX;
+            }
+            function mapY(y) {
+            // flip Y so larger y is toward top of canvas
+            return canvas.height - (y - (minY - pad)) * scaleY;
+            }
 
-      chart.update();
-    }
-  </script>
+            // draw and fill the polygon if 3+ points
+            if (xcoords.length >= 3) {
+                ctx.beginPath();
+                ctx.moveTo(mapX(xcoords[0]), mapY(ycoords[0]));
+                for (var i = 1; i < xcoords.length; i++) {
+                    ctx.lineTo(mapX(xcoords[i]), mapY(ycoords[i]));
+                }
+                ctx.closePath();
+                ctx.fillStyle   = "rgba(173, 216, 230, 0.5)"; // lightblue, 50% opacity
+                ctx.fill();
+                ctx.strokeStyle = "#007acc";
+                ctx.stroke();
+            }
+
+            // draw each point on top
+            ctx.fillStyle = "#cc0000";
+            for (var i = 0; i < xcoords.length; i++) {
+                var cx = mapX(xcoords[i]),
+                    cy = mapY(ycoords[i]);
+                ctx.beginPath();
+                ctx.arc(cx, cy, 4, 0, 2*Math.PI);
+                ctx.fill();
+            }
+        }
+    </script>
+
 </body>
-</html>
