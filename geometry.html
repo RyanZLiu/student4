@@ -90,14 +90,16 @@ search_exclude: true
       const fillTrace = {
         x:         xPlot,
         y:         yPlot,
-        mode:      'lines',               // draw just the border
+        mode:      'lines',
         fill:      xcoords.length >= 3 ? 'toself' : 'none',
         fillcolor: 'rgba(173,216,230,0.5)',
         line:      { color: '#007acc' },
-        hoveron:   'fills',               // only trigger hover on the filled area
-        hovertemplate: '<extra>polygon</extra>',
+        hoveron:   'fills',
+        name:      'polygon',                        // ← set the trace name
+        hovertemplate: '<extra>%{trace.name}</extra>', // ← inject the name into the extra box
         showlegend: false
       };
+
 
       // 3) the **points** trace
       const pointTrace = {
