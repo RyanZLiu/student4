@@ -80,41 +80,49 @@ search_exclude: true
 
     function updateGraph() {
       // 1) build closed‑polygon arrays
-      let xPlot = xcoords.slice(), yPlot = ycoords.slice();
+      const xPlot = xcoords.slice(), yPlot = ycoords.slice();
       if (xcoords.length > 0) {
         xPlot.push(xcoords[0]);
         yPlot.push(ycoords[0]);
       }
 
-      // 2) define the trace with custom hovertemplate
-      const trace = {
+      // 2) the **fill + border** trace
+      const fillTrace = {
         x:         xPlot,
         y:         yPlot,
-        mode:      'lines+markers',
+        mode:      'lines',               // draw just the border
         fill:      xcoords.length >= 3 ? 'toself' : 'none',
         fillcolor: 'rgba(173,216,230,0.5)',
-        marker:    { size: 8, color: 'red' },
         line:      { color: '#007acc' },
-
-        // ← show only “polygon” in the hover box
+        hoveron:   'fills',               // only trigger hover on the filled area
         hovertemplate: '<extra>polygon</extra>',
-
         showlegend: false
       };
 
-      // 3) define layout **before** drawing
+      // 3) the **points** trace
+      const pointTrace = {
+        x:         xcoords,
+        y:         ycoords,
+        mode:      'markers',
+        marker:    { size: 8, color: 'red' },
+        hovertemplate: '(%{x}, %{y})<extra></extra>',
+        showlegend: false
+      };
+
+      // 4) layout
       const layout = {
         xaxis:    { title: 'X', zeroline: true, showgrid: true, gridcolor: '#ddd' },
         yaxis:    { title: 'Y', zeroline: true, showgrid: true, gridcolor: '#ddd' },
         dragmode: 'pan'
       };
 
-      // 4) render (just one call—here we use newPlot)
-      Plotly.newPlot('plot', [trace], layout, {
+      // 5) draw
+      Plotly.newPlot('plot', [fillTrace, pointTrace], layout, {
         responsive: true,
         scrollZoom: true
       });
     }
+
 
     
 
