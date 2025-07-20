@@ -99,14 +99,12 @@ search_exclude: true
         marker:   { size: 8, color: 'red' },
         line:     { color: '#007acc' },
 
-        // NO legend entry:
-        showlegend: false,
-
-        // Hover shows "(x, y)" and then "polygon"
-        hovertemplate: '(%{x}, %{y})<extra>polygon</extra>'
+        name:       'polygon',   // this is what shows up
+        hoverinfo:  'name',      // only show the trace name
+        showlegend: false        // hide it from any legend
       };
 
-
+      Plotly.react('plot', [trace], layout, {responsive:true, scrollZoom:true});
 
       // 3) numbered/grid axes + pan/zoom
       const layout = {
