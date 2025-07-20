@@ -5,58 +5,53 @@ title: Expenses
 search_exclude: true
 ---
 
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Shoelace with Graph & Axes</title>
+  <title>Shoelace + Interactive Plot</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     body { font-family: sans-serif; padding: 1em; }
-    canvas { border:1px solid #ccc; margin-top:1em; }
     input, button { margin: .2em; }
+    table { border-collapse: collapse; margin-top: .5em; }
+    th, td { border:1px solid #ccc; padding:4px 8px; }
   </style>
 </head>
 <body>
   <h1>Find Area Using Shoelace Theorem</h1>
-  <h2>Enter coordinates in **clockwise** order</h2>
+  <h2>Enter in **clockwise** order</h2>
 
   <label>X: <input type="number" id="xcoordinate" step="0.01"></label>
   <label>Y: <input type="number" id="ycoordinate" step="0.01"></label>
   <button onclick="addcoordinate()">Submit</button>
 
-  <h3>📋 (x, y) Coordinate Table</h3>
-  <table id="coordinatesTable" border="1" cellpadding="4">
+  <h3>📋 Coordinate Table</h3>
+  <table id="coordinatesTable">
     <thead><tr><th>X</th><th>Y</th></tr></thead>
     <tbody></tbody>
   </table>
 
   <p id="totalarea">The area of your polygon is 0.00</p>
 
-  <canvas id="plotCanvas" width="400" height="400">
-    Your browser doesn’t support HTML5 canvas
-  </canvas>
+  <!-- Plotly graph -->
+  <div id="plot" style="width:600px; height:600px; margin-top:1em;"></div>
 
   <script>
-    // 1) globals
     var xcoords = [], ycoords = [];
-    var canvas = document.getElementById("plotCanvas");
-    var ctx    = canvas.getContext("2d");
 
-    // 2) Add a point
     function addcoordinate() {
-      var UserX = parseFloat(document.getElementById("xcoordinate").value);
-      var UserY = parseFloat(document.getElementById("ycoordinate").value);
-      if (isNaN(UserX) || isNaN(UserY)) {
+      var X = parseFloat(document.getElementById("xcoordinate").value);
+      var Y = parseFloat(document.getElementById("ycoordinate").value);
+      if (isNaN(X) || isNaN(Y)) {
         return alert("Please enter both X and Y!");
       }
-      xcoords.push(UserX);
-      ycoords.push(UserY);
+      xcoords.push(X);
+      ycoords.push(Y);
       updateTable();
       computeArea();
       updateGraph();
     }
 
-    // 3) Update the HTML table
     function updateTable() {
       var tbody = document.querySelector("#coordinatesTable tbody");
       tbody.innerHTML = "";
@@ -67,114 +62,45 @@ search_exclude: true
       }
     }
 
-    // 4) Shoelace area calculation
     function computeArea() {
-      if (xcoords.length < 3) {
-        return document.getElementById("totalarea")
-               .textContent = "The area of your polygon is 0.00";
+      var areaText = "The area of your polygon is 0.00";
+      if (xcoords.length >= 3) {
+        var a1 = 0, a2 = 0;
+        for (var i = 0; i < xcoords.length - 1; i++) {
+          a1 += xcoords[i] * ycoords[i+1];
+          a2 += ycoords[i] * xcoords[i+1];
+        }
+        a1 += xcoords[xcoords.length-1] * ycoords[0];
+        a2 += ycoords[ycoords.length-1] * xcoords[0];
+        var area = 0.5 * Math.abs(a1 - a2);
+        areaText = "The area of your polygon is " + area.toFixed(2);
       }
-      var a1=0, a2=0;
-      for (var j=0; j<xcoords.length-1; j++) {
-        a1 += xcoords[j]*ycoords[j+1];
-        a2 += ycoords[j]*xcoords[j+1];
-      }
-      a1 += xcoords[xcoords.length-1]*ycoords[0];
-      a2 += ycoords[ycoords.length-1]*xcoords[0];
-      var area = 0.5*Math.abs(a1 - a2);
-      document.getElementById("totalarea")
-              .textContent = "The area of your polygon is " + area.toFixed(2);
+      document.getElementById("totalarea").textContent = areaText;
     }
 
     function updateGraph() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (xcoords.length === 0) return;
+      var trace = {
+        x: xcoords,
+        y: ycoords,
+        mode: 'markers+lines',
+        fill: xcoords.length >= 3 ? 'toself' : 'none',
+        fillcolor: 'rgba(173,216,230,0.5)',
+        marker: { size: 8, color: 'red' },
+        line:   { color: '#007acc' }
+      };
 
-      var minX = Math.min(...xcoords),
-          maxX = Math.max(...xcoords),
-          minY = Math.min(...ycoords),
-          maxY = Math.max(...ycoords);
-      var dx = maxX - minX, dy = maxY - minY;
-      var pad = Math.max(dx, dy)*0.1 || 1;
+      var layout = {
+        xaxis: { title: 'X', zeroline: true, showgrid: true, gridcolor: '#ddd' },
+        yaxis: { title: 'Y', zeroline: true, showgrid: true, gridcolor: '#ddd' },
+        dragmode: 'pan',
+        hovermode: 'closest'
+      };
 
-      // scales
-      var scaleX = canvas.width  / (dx + 2*pad),
-          scaleY = canvas.height / (dy + 2*pad);
-
-      // map data→pixel
-      function mapX(x){ return (x - (minX - pad)) * scaleX; }
-      function mapY(y){ return canvas.height - (y - (minY - pad)) * scaleY; }
-
-      // draw axes if 0 in range
-      ctx.save();
-      ctx.strokeStyle = "#444"; ctx.lineWidth = 1;
-
-      // horizontal (y=0)
-      if (0 >= minY - pad && 0 <= maxY + pad) {
-        var yy = mapY(0);
-        ctx.beginPath();
-        ctx.moveTo(0, yy);
-        ctx.lineTo(canvas.width, yy);
-        ctx.stroke();
-      }
-      // vertical (x=0)
-      if (0 >= minX - pad && 0 <= maxX + pad) {
-        var xx = mapX(0);
-        ctx.beginPath();
-        ctx.moveTo(xx, 0);
-        ctx.lineTo(xx, canvas.height);
-        ctx.stroke();
-      }
-      ctx.restore();
-
-      // --- draw axes (always at bottom & left, or through zero if visible) ---
-        ctx.save();
-        ctx.strokeStyle = "#444";
-        ctx.lineWidth   = 1;
-
-        // X‑axis: through y=0 if in view, otherwise at bottom of canvas
-        var y0 = (0 >= minY - pad && 0 <= maxY + pad)
-                ? mapY(0)
-                : canvas.height;
-        ctx.beginPath();
-        ctx.moveTo(0, y0);
-        ctx.lineTo(canvas.width, y0);
-        ctx.stroke();
-
-        // Y‑axis: through x=0 if in view, otherwise at left of canvas
-        var x0 = (0 >= minX - pad && 0 <= maxX + pad)
-                ? mapX(0)
-                : 0;
-        ctx.beginPath();
-        ctx.moveTo(x0, 0);
-        ctx.lineTo(x0, canvas.height);
-        ctx.stroke();
-
-        ctx.restore();
-
-
-      // shade polygon (≥3 points)
-      if (xcoords.length >= 3) {
-        ctx.beginPath();
-        ctx.moveTo(mapX(xcoords[0]), mapY(ycoords[0]));
-        for (var i=1; i<xcoords.length; i++) {
-          ctx.lineTo(mapX(xcoords[i]), mapY(ycoords[i]));
-        }
-        ctx.closePath();
-        ctx.fillStyle   = "rgba(173,216,230,0.5)";
-        ctx.fill();
-        ctx.strokeStyle = "#007acc";
-        ctx.stroke();
-      }
-
-      // draw points
-      ctx.fillStyle = "#cc0000";
-      for (var i=0; i<xcoords.length; i++) {
-        var cx = mapX(xcoords[i]), cy = mapY(ycoords[i]);
-        ctx.beginPath();
-        ctx.arc(cx, cy, 4, 0, 2*Math.PI);
-        ctx.fill();
-      }
+      Plotly.react('plot', [trace], layout, {responsive: true});
     }
+
+    // initialize empty plot
+    updateGraph();
   </script>
 </body>
 </html>
