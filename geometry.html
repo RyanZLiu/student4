@@ -79,36 +79,32 @@ search_exclude: true
     }
 
     function updateGraph() {
-      // build closed polygon
-      let xPlot = xcoords.slice(), yPlot = ycoords.slice();
-      if (xcoords.length) {
+      // 1) build closed‐polygon arrays
+      let xPlot = xcoords.slice();
+      let yPlot = ycoords.slice();
+
+      // if we have at least one point, append the first point again
+      if (xcoords.length > 0) {
         xPlot.push(xcoords[0]);
         yPlot.push(ycoords[0]);
       }
 
+      // 2) create the trace with fill:'toself' for 3+ points
       const trace = {
-        x: xPlot,
-        y: yPlot,
-        mode: 'lines+markers',
-        fill: xcoords.length >= 3 ? 'toself' : 'none',
-        fillcolor: 'rgba(173,216,230,0.5)',
-        marker: { size: 8, color: 'red' },
-        line: { color: '#007acc' },
-        hovertemplate: '(%{x}, %{y})<extra></extra>'
-      };
+        x:        xPlot,
+        y:        yPlot,
+        mode:     'lines+markers',
+        fill:     xcoords.length >= 3 ? 'toself' : 'none',
+        fillcolor:'rgba(173,216,230,0.5)',
+        marker:   { size: 8, color: 'red' },
+        line:     { color: '#007acc' },
 
-      const layout = {
-        xaxis: { title: 'X', zeroline: true, showgrid: true, gridcolor: '#ddd' },
-        yaxis: { title: 'Y', zeroline: true, showgrid: true, gridcolor: '#ddd' },
-        dragmode: 'pan',
-        hovermode: 'closest'
-      };
+        // NO legend entry:
+        showlegend: false,
 
-      Plotly.newPlot('plot', [trace], layout, {
-        responsive: true,
-        scrollZoom: true
-      });
-    }
+        // Hover shows "(x, y)" and then "polygon"
+        hovertemplate: '(%{x}, %{y})<extra>polygon</extra>'
+      };
 
 
 
