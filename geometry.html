@@ -79,27 +79,37 @@ search_exclude: true
     }
 
     function updateGraph() {
-      // 1) build closed‐polygon arrays
-      let xPlot = xcoords.slice();
-      let yPlot = ycoords.slice();
-
-      // if we have at least one point, append the first point again
-      if (xcoords.length > 0) {
+      // build closed polygon
+      let xPlot = xcoords.slice(), yPlot = ycoords.slice();
+      if (xcoords.length) {
         xPlot.push(xcoords[0]);
         yPlot.push(ycoords[0]);
       }
 
-      // 2) create the trace with fill:'toself' for 3+ points
       const trace = {
-        x:    xPlot,
-        y:    yPlot,
+        x: xPlot,
+        y: yPlot,
         mode: 'lines+markers',
-        hovertemplate: '(%{x}, %{y})<extra></extra>',
-        fill: xcoords.length>=3?'toself':'none',
+        fill: xcoords.length >= 3 ? 'toself' : 'none',
         fillcolor: 'rgba(173,216,230,0.5)',
         marker: { size: 8, color: 'red' },
-        line:   { color: '#007acc' }
+        line: { color: '#007acc' },
+        hovertemplate: '(%{x}, %{y})<extra></extra>'
       };
+
+      const layout = {
+        xaxis: { title: 'X', zeroline: true, showgrid: true, gridcolor: '#ddd' },
+        yaxis: { title: 'Y', zeroline: true, showgrid: true, gridcolor: '#ddd' },
+        dragmode: 'pan',
+        hovermode: 'closest'
+      };
+
+      Plotly.newPlot('plot', [trace], layout, {
+        responsive: true,
+        scrollZoom: true
+      });
+    }
+
 
 
       // 3) numbered/grid axes + pan/zoom
