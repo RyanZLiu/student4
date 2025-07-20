@@ -79,47 +79,44 @@ search_exclude: true
     }
 
     function updateGraph() {
-      // 1) build closed‐polygon arrays
-      let xPlot = xcoords.slice();
-      let yPlot = ycoords.slice();
-
-      // if we have at least one point, append the first point again
+      // 1) build closed‑polygon arrays
+      let xPlot = xcoords.slice(), yPlot = ycoords.slice();
       if (xcoords.length > 0) {
         xPlot.push(xcoords[0]);
         yPlot.push(ycoords[0]);
       }
 
-      // 2) create the trace with fill:'toself' for 3+ points
+      // 2) define the trace with custom hovertemplate
       const trace = {
-        x:        xPlot,
-        y:        yPlot,
-        mode:     'lines+markers',
-        fill:     xcoords.length >= 3 ? 'toself' : 'none',
-        fillcolor:'rgba(173,216,230,0.5)',
-        marker:   { size: 8, color: 'red' },
-        line:     { color: '#007acc' },
+        x:         xPlot,
+        y:         yPlot,
+        mode:      'lines+markers',
+        fill:      xcoords.length >= 3 ? 'toself' : 'none',
+        fillcolor: 'rgba(173,216,230,0.5)',
+        marker:    { size: 8, color: 'red' },
+        line:      { color: '#007acc' },
 
-        name:       'polygon',   // this is what shows up
-        hoverinfo:  'name',      // only show the trace name
-        showlegend: false        // hide it from any legend
+        // ← show only “polygon” in the hover box
+        hovertemplate: '<extra>polygon</extra>',
+
+        showlegend: false
       };
 
-      Plotly.react('plot', [trace], layout, {responsive:true, scrollZoom:true});
-
-      // 3) numbered/grid axes + pan/zoom
+      // 3) define layout **before** drawing
       const layout = {
-        xaxis: { title: 'X', zeroline: true, showgrid: true, gridcolor: '#ddd' },
-        yaxis: { title: 'Y', zeroline: true, showgrid: true, gridcolor: '#ddd' },
-        dragmode: 'pan',
-        hovermode: 'closest'
+        xaxis:    { title: 'X', zeroline: true, showgrid: true, gridcolor: '#ddd' },
+        yaxis:    { title: 'Y', zeroline: true, showgrid: true, gridcolor: '#ddd' },
+        dragmode: 'pan'
       };
 
-      // 4) redraw the entire plot
+      // 4) render (just one call—here we use newPlot)
       Plotly.newPlot('plot', [trace], layout, {
         responsive: true,
-        scrollZoom: true    // enable wheel‐to‐zoom
+        scrollZoom: true
       });
     }
+
+    
 
 
     // initialize empty plot
