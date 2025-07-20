@@ -79,51 +79,60 @@ search_exclude: true
     }
 
     function updateGraph() {
-      // 1) build closed‑polygon arrays
+      // build the closed‑polygon coords
       const xPlot = xcoords.slice(), yPlot = ycoords.slice();
-      if (xcoords.length > 0) {
+      if (xcoords.length) {
         xPlot.push(xcoords[0]);
         yPlot.push(ycoords[0]);
       }
 
-      // 2) the **fill + border** trace
+      // 1) pure fill trace (no lines)
       const fillTrace = {
         x:         xPlot,
         y:         yPlot,
-        mode:      'lines',
+        mode:      'none',                   // no markers or lines here
         fill:      xcoords.length >= 3 ? 'toself' : 'none',
         fillcolor: 'rgba(173,216,230,0.5)',
-        line:      { color: '#007acc' },
-        hoveron:   'fills',
-        name:      'polygon',                        // ← set the trace name
-        hovertemplate: '<extra>%{trace.name}</extra>', // ← inject the name into the extra box
+        hoveron:   'fills',                  // only trigger on the interior
+        name:      'polygon',                // your custom name
+        hovertemplate: '<extra>%{trace.name}</extra>',
         showlegend: false
       };
 
+      // 2) border trace (lines only, no hover)
+      const borderTrace = {
+        x:         xPlot,
+        y:         yPlot,
+        mode:      'lines',
+        line:      { color: '#007acc' },
+        hoverinfo: 'skip',                   // disable hover on the border
+        showlegend: false
+      };
 
-      // 3) the **points** trace
+      // 3) point trace (markers only)
       const pointTrace = {
         x:         xcoords,
         y:         ycoords,
         mode:      'markers',
-        marker:    { size: 8, color: 'red' },
+        marker:    { size: 12, color: 'red' },  // bigger size = easier to hover
         hovertemplate: '(%{x}, %{y})<extra></extra>',
         showlegend: false
       };
 
-      // 4) layout
+      // layout with closest hovermode
       const layout = {
         xaxis:    { title: 'X', zeroline: true, showgrid: true, gridcolor: '#ddd' },
         yaxis:    { title: 'Y', zeroline: true, showgrid: true, gridcolor: '#ddd' },
-        dragmode: 'pan'
+        dragmode: 'pan',
+        hovermode:'closest'                 // always pick the point you're directly over
       };
 
-      // 5) draw
-      Plotly.newPlot('plot', [fillTrace, pointTrace], layout, {
+      Plotly.newPlot('plot', [fillTrace, borderTrace, pointTrace], layout, {
         responsive: true,
         scrollZoom: true
       });
     }
+
 
 
     
