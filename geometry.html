@@ -85,12 +85,10 @@ search_exclude: true
               .textContent = "The area of your polygon is " + area.toFixed(2);
     }
 
-    // 5) Draw graph + axes + shaded polygon + points
     function updateGraph() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (xcoords.length === 0) return;
 
-      // data bounds + 10% padding
       var minX = Math.min(...xcoords),
           maxX = Math.max(...xcoords),
           minY = Math.min(...ycoords),
@@ -127,6 +125,32 @@ search_exclude: true
         ctx.stroke();
       }
       ctx.restore();
+
+      // --- draw axes (always at bottom & left, or through zero if visible) ---
+        ctx.save();
+        ctx.strokeStyle = "#444";
+        ctx.lineWidth   = 1;
+
+        // X‑axis: through y=0 if in view, otherwise at bottom of canvas
+        var y0 = (0 >= minY - pad && 0 <= maxY + pad)
+                ? mapY(0)
+                : canvas.height;
+        ctx.beginPath();
+        ctx.moveTo(0, y0);
+        ctx.lineTo(canvas.width, y0);
+        ctx.stroke();
+
+        // Y‑axis: through x=0 if in view, otherwise at left of canvas
+        var x0 = (0 >= minX - pad && 0 <= maxX + pad)
+                ? mapX(0)
+                : 0;
+        ctx.beginPath();
+        ctx.moveTo(x0, 0);
+        ctx.lineTo(x0, canvas.height);
+        ctx.stroke();
+
+        ctx.restore();
+
 
       // shade polygon (≥3 points)
       if (xcoords.length >= 3) {
