@@ -32,6 +32,7 @@ search_exclude: true
   </table>
 
   <p id="totalarea">The area of your polygon is 0.00</p>
+  <p id="perimeter">The perimeter of your polygon is 0.00</p>
 
   <!-- Plotly graph -->
   <div id="plot" style="width:600px; height:600px; margin-top:1em;"></div>
@@ -49,6 +50,7 @@ search_exclude: true
       ycoords.push(Y);
       updateTable();
       computeArea();
+      computePerimeter();
       updateGraph();
     }
 
@@ -77,6 +79,22 @@ search_exclude: true
       }
       document.getElementById("totalarea").textContent = areaText;
     }
+
+    function computePerimeter() {
+      let peri = 0;
+      if (xcoords.length >= 2) {
+        for (let i = 0; i < xcoords.length; i++) {
+          // next index, wrapping around
+          const j = (i + 1) % xcoords.length;
+          const dx = xcoords[j] - xcoords[i];
+          const dy = ycoords[j] - ycoords[i];
+          peri += Math.sqrt(dx*dx + dy*dy);
+        }
+      }
+      document.getElementById("perimeter").textContent =
+        "The perimeter of your polygon is " + peri.toFixed(2);
+    }
+
 
     function updateGraph() {
       // build the closed‑polygon coords
@@ -132,11 +150,6 @@ search_exclude: true
         scrollZoom: true
       });
     }
-
-
-
-    
-
 
     // initialize empty plot
     updateGraph();
