@@ -11,24 +11,80 @@ search_exclude: true
   <title>Shoelace + Interactive Plot</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 1em; }
-    input, button { margin: .2em; }
+    /* Page background */
+    body {
+      font-family: sans-serif;
+      padding: 1em;
+      margin: 0;
+      background: linear-gradient(135deg, #2b5876, #4e4376);
+      color: #fff;
+    }
+
+    /* Inputs */
+    input, button {
+      margin: .2em;
+      padding: .4em;
+      border: none;
+      border-radius: 4px;
+    }
+    input {
+      width: 4em;
+    }
+    button {
+      background: #506d94;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #3f5779;
+    }
 
     /* Layout containers */
-    .container { display: flex; align-items: flex-start; gap: 2em; margin-top: 1em; }
-    .left-panel, .right-panel { flex: 1; }
+    .container {
+      display: flex;
+      align-items: flex-start;
+      gap: 2em;
+      margin-top: 1em;
+    }
+    .left-panel, .right-panel {
+      flex: 1;
+    }
 
     /* Coordinate table styling */
-    table { border-collapse: collapse; width: 100%; margin-top: .5em; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    th { background-color: #007acc; color: #fff; }
-    tbody tr:nth-child(odd) { background-color: #f9f9f9; }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: .5em;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    th, td {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: rgba(80, 109, 148, 0.8);
+      color: #fff;
+    }
+    tbody tr:nth-child(odd) {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
 
     /* Stats styling */
-    #stats p { margin: .5em 0; font-weight: bold; }
+    #stats p {
+      margin: .5em 0;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
 
     /* Plot container */
-    #plot { width: 100%; height: 600px; }
+    #plot {
+      width: 100%;
+      height: 600px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 8px;
+    }
   </style>
 </head>
 <body>
@@ -46,7 +102,7 @@ search_exclude: true
 
       <h3>Coordinate Table</h3>
       <table id="coordinatesTable">
-        <thead><tr><th>X</th><th>Y</th></tr></thead>
+        <thead><tr><th>X</th><th>Y</th></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -122,9 +178,9 @@ search_exclude: true
         xPlot.push(xcoords[0]); yPlot.push(ycoords[0]);
       }
       const fillTrace = { x: xPlot, y: yPlot, mode: 'none', fill: xcoords.length >= 3 ? 'toself' : 'none', fillcolor: 'rgba(173,216,230,0.5)', hoveron: 'fills', name: 'polygon', hovertemplate: '<extra>%{trace.name}</extra>', showlegend: false };
-      const borderTrace = { x: xPlot, y: yPlot, mode: 'lines', line: { color: '#007acc' }, hoverinfo: 'skip', showlegend: false };
+      const borderTrace = { x: xPlot, y: yPlot, mode: 'lines', line: { color: '#ffffff' }, hoverinfo: 'skip', showlegend: false };
       const pointTrace = { x: xcoords, y: ycoords, mode: 'markers', marker: { size: 12, color: 'red' }, hovertemplate: '(%{x}, %{y})<extra></extra>', showlegend: false };
-      const layout = { xaxis: { title: 'X', zeroline: true, showgrid: true, gridcolor: '#ddd' }, yaxis: { title: 'Y', zeroline: true, showgrid: true, gridcolor: '#ddd' }, dragmode: 'pan', hovermode: 'closest' };
+      const layout = { paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', xaxis: { title: 'X', zeroline: true, showgrid: true, gridcolor: 'rgba(255,255,255,0.2)' }, yaxis: { title: 'Y', zeroline: true, showgrid: true, gridcolor: 'rgba(255,255,255,0.2)' }, dragmode: 'pan', hovermode: 'closest' };
       Plotly.newPlot('plot', [fillTrace, borderTrace, pointTrace], layout, { responsive: true, scrollZoom: true });
     }
 
