@@ -5,190 +5,152 @@ title: Expenses
 search_exclude: true
 ---
 
-<!-- Setting up the basic title, headings, and information/directions that users should know before working with the program -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Find Area Using Shoelace Theorem</title>
+  <meta charset="UTF-8">
+  <title>Shoelace with Graph & Axes</title>
+  <style>
+    body { font-family: sans-serif; padding: 1em; }
+    canvas { border:1px solid #ccc; margin-top:1em; }
+    input, button { margin: .2em; }
+  </style>
 </head>
 <body>
-    <h1>Find Area Using Shoelace Theorem</h1>
-    <h2>Note: Coordinates of vertices must be entered in clockwise order.</h2>
+  <h1>Find Area Using Shoelace Theorem</h1>
+  <h2>Enter coordinates in **clockwise** order</h2>
 
-<!-- Setting up the text boxes for users to input their X, Y coordinates. When the single submit button is clicked, the addcoordinate function is called -->
+  <label>X: <input type="number" id="xcoordinate" step="0.01"></label>
+  <label>Y: <input type="number" id="ycoordinate" step="0.01"></label>
+  <button onclick="addcoordinate()">Submit</button>
 
-    <form id="XInputs">
-        <label for="xcoordinate">Enter an X Coordinate:</label>
-        <input type="number" id="xcoordinate" name="X" step="0.01">
-    </form>
-    <form id="XInputs">
-        <label for="ycoordinate">Enter an Y Coordinate:</label>
-        <input type="number" id="ycoordinate" name="Y" step="0.01">
-    </form>
-    <form>
-        <input type="button" value="Submit" onclick="addcoordinate()">
-    </form>
-    <!-- Setting up the Coordinate Table where the user inputted X, Y coordinates will be displayed -->
-    <h3><u>(x,y) Coordinate Table</u></h3> 
-    <table id="coordinatesTable">
-        <thead>
-            <tr>
-                <th>(X,</th>
-                <th>Y)</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-    <!-- Displaying the final area of the shape -->
-    <p id="totalarea">The area of your polygon is 0.00</p>
+  <h3>📋 (x, y) Coordinate Table</h3>
+  <table id="coordinatesTable" border="1" cellpadding="4">
+    <thead><tr><th>X</th><th>Y</th></tr></thead>
+    <tbody></tbody>
+  </table>
 
-    <canvas id="plotCanvas" width="400" height="400"
-            style="border:1px solid #ccc; margin-top:1em;">
-    </canvas>
+  <p id="totalarea">The area of your polygon is 0.00</p>
 
-    <script>
-        var xcoords = [];
-        var ycoords = [];
+  <canvas id="plotCanvas" width="400" height="400">
+    Your browser doesn’t support HTML5 canvas
+  </canvas>
 
-        // get our canvas and 2D context once
-        var canvas = document.getElementById("plotCanvas");
-        var ctx    = canvas.getContext("2d");
+  <script>
+    // 1) globals
+    var xcoords = [], ycoords = [];
+    var canvas = document.getElementById("plotCanvas");
+    var ctx    = canvas.getContext("2d");
 
-        function addcoordinate() {
-            var UserX = parseFloat(document.getElementById("xcoordinate").value);
-            var UserY = parseFloat(document.getElementById("ycoordinate").value);
-            if (!isNaN(UserX) && !isNaN(UserY)) {
-                xcoords.push(UserX);
-                ycoords.push(UserY);
-                updateTable();
-                area();
-                updateGraph();   // ← redraw graph
-            } else {
-                alert("Please enter both an X and a Y coordinate!");
-            }
+    // 2) Add a point
+    function addcoordinate() {
+      var UserX = parseFloat(document.getElementById("xcoordinate").value);
+      var UserY = parseFloat(document.getElementById("ycoordinate").value);
+      if (isNaN(UserX) || isNaN(UserY)) {
+        return alert("Please enter both X and Y!");
+      }
+      xcoords.push(UserX);
+      ycoords.push(UserY);
+      updateTable();
+      computeArea();
+      updateGraph();
+    }
+
+    // 3) Update the HTML table
+    function updateTable() {
+      var tbody = document.querySelector("#coordinatesTable tbody");
+      tbody.innerHTML = "";
+      for (var i = 0; i < xcoords.length; i++) {
+        var tr = document.createElement("tr");
+        tr.innerHTML = "<td>" + xcoords[i] + "</td><td>" + ycoords[i] + "</td>";
+        tbody.appendChild(tr);
+      }
+    }
+
+    // 4) Shoelace area calculation
+    function computeArea() {
+      if (xcoords.length < 3) {
+        return document.getElementById("totalarea")
+               .textContent = "The area of your polygon is 0.00";
+      }
+      var a1=0, a2=0;
+      for (var j=0; j<xcoords.length-1; j++) {
+        a1 += xcoords[j]*ycoords[j+1];
+        a2 += ycoords[j]*xcoords[j+1];
+      }
+      a1 += xcoords[xcoords.length-1]*ycoords[0];
+      a2 += ycoords[ycoords.length-1]*xcoords[0];
+      var area = 0.5*Math.abs(a1 - a2);
+      document.getElementById("totalarea")
+              .textContent = "The area of your polygon is " + area.toFixed(2);
+    }
+
+    // 5) Draw graph + axes + shaded polygon + points
+    function updateGraph() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (xcoords.length === 0) return;
+
+      // data bounds + 10% padding
+      var minX = Math.min(...xcoords),
+          maxX = Math.max(...xcoords),
+          minY = Math.min(...ycoords),
+          maxY = Math.max(...ycoords);
+      var dx = maxX - minX, dy = maxY - minY;
+      var pad = Math.max(dx, dy)*0.1 || 1;
+
+      // scales
+      var scaleX = canvas.width  / (dx + 2*pad),
+          scaleY = canvas.height / (dy + 2*pad);
+
+      // map data→pixel
+      function mapX(x){ return (x - (minX - pad)) * scaleX; }
+      function mapY(y){ return canvas.height - (y - (minY - pad)) * scaleY; }
+
+      // draw axes if 0 in range
+      ctx.save();
+      ctx.strokeStyle = "#444"; ctx.lineWidth = 1;
+
+      // horizontal (y=0)
+      if (0 >= minY - pad && 0 <= maxY + pad) {
+        var yy = mapY(0);
+        ctx.beginPath();
+        ctx.moveTo(0, yy);
+        ctx.lineTo(canvas.width, yy);
+        ctx.stroke();
+      }
+      // vertical (x=0)
+      if (0 >= minX - pad && 0 <= maxX + pad) {
+        var xx = mapX(0);
+        ctx.beginPath();
+        ctx.moveTo(xx, 0);
+        ctx.lineTo(xx, canvas.height);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // shade polygon (≥3 points)
+      if (xcoords.length >= 3) {
+        ctx.beginPath();
+        ctx.moveTo(mapX(xcoords[0]), mapY(ycoords[0]));
+        for (var i=1; i<xcoords.length; i++) {
+          ctx.lineTo(mapX(xcoords[i]), mapY(ycoords[i]));
         }
+        ctx.closePath();
+        ctx.fillStyle   = "rgba(173,216,230,0.5)";
+        ctx.fill();
+        ctx.strokeStyle = "#007acc";
+        ctx.stroke();
+      }
 
-        function updateTable() {
-            var tableBody = document
-            .getElementById("coordinatesTable")
-            .getElementsByTagName("tbody")[0];
-            tableBody.innerHTML = "";
-            for (var i = 0; i < xcoords.length; i++) {
-                var row = tableBody.insertRow();
-                row.insertCell(0).textContent = "(" + xcoords[i] + ",";
-                row.insertCell(1).textContent =        ycoords[i] + ")";
-            }
-        }
-
-        function area() {
-            if (xcoords.length < 3) {
-                document.getElementById("totalarea")
-                        .textContent = "The area of your polygon is 0.00";
-                return;
-            }
-            var a1 = 0, a2 = 0;
-            for (var j = 0; j < xcoords.length - 1; j++) {
-                a1 += xcoords[j] * ycoords[j+1];
-                a2 += ycoords[j] * xcoords[j+1];
-            }
-            a1 += xcoords[xcoords.length-1] * ycoords[0];
-            a2 += ycoords[ycoords.length-1] * xcoords[0];
-            var totalArea = 0.5 * Math.abs(a1 - a2);
-            document.getElementById("totalarea")
-                    .textContent = "The area of your polygon is " + totalArea.toFixed(2);
-        }
-
-        function updateGraph() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (xcoords.length === 0) return;
-
-            var minX = Math.min(...xcoords),
-                maxX = Math.max(...xcoords),
-                minY = Math.min(...ycoords),
-                maxY = Math.max(...ycoords);
-            var dx = maxX - minX, dy = maxY - minY;
-            var pad = Math.max(dx, dy) * 0.1 || 1;
-
-            // scales
-            var scaleX = canvas.width  / (dx + 2*pad),
-                scaleY = canvas.height / (dy + 2*pad);
-
-            // map data→pixel
-            function mapX(x){ return (x - (minX - pad)) * scaleX; }
-            function mapY(y){ return canvas.height - (y - (minY - pad)) * scaleY; }
-
-            // --- draw axes at x=0 and y=0 if visible ---
-            ctx.save();
-            ctx.strokeStyle = "#444";
-            ctx.lineWidth = 1;
-
-            // horizontal axis (y=0)
-            if (0 >= minY - pad && 0 <= maxY + pad) {
-            var y0 = mapY(0);
-            ctx.beginPath();
-            ctx.moveTo(0,   y0);
-            ctx.lineTo(canvas.width, y0);
-            ctx.stroke();
-            }
-            // vertical axis (x=0)
-            if (0 >= minX - pad && 0 <= maxX + pad) {
-            var x0 = mapX(0);
-            ctx.beginPath();
-            ctx.moveTo(x0, 0);
-            ctx.lineTo(x0, canvas.height);
-            ctx.stroke();
-            }
-            ctx.restore();
-
-            // --- shade & stroke polygon when 3+ points ---
-            if (xcoords.length >= 3) {
-                ctx.beginPath();
-                ctx.moveTo(mapX(xcoords[0]), mapY(ycoords[0]));
-                for (var i = 1; i < xcoords.length; i++) {
-                    ctx.lineTo(mapX(xcoords[i]), mapY(ycoords[i]));
-                }
-                ctx.closePath();
-                ctx.fillStyle   = "rgba(173,216,230,0.5)";
-                ctx.fill();
-                ctx.strokeStyle = "#007acc";
-                ctx.stroke();
-            }
-
-            // --- draw points ---
-            ctx.fillStyle = "#cc0000";
-            for (var i = 0; i < xcoords.length; i++) {
-                var cx = mapX(xcoords[i]), cy = mapY(ycoords[i]);
-                ctx.beginPath();
-                ctx.arc(cx, cy, 4, 0, 2*Math.PI);
-                ctx.fill();
-            }
-        }
-
-
-            // draw and fill the polygon if 3+ points
-            if (xcoords.length >= 3) {
-                ctx.beginPath();
-                ctx.moveTo(mapX(xcoords[0]), mapY(ycoords[0]));
-                for (var i = 1; i < xcoords.length; i++) {
-                    ctx.lineTo(mapX(xcoords[i]), mapY(ycoords[i]));
-                }
-                ctx.closePath();
-                ctx.fillStyle   = "rgba(173, 216, 230, 0.5)"; // lightblue, 50% opacity
-                ctx.fill();
-                ctx.strokeStyle = "#007acc";
-                ctx.stroke();
-            }
-
-            // draw each point on top
-            ctx.fillStyle = "#cc0000";
-            for (var i = 0; i < xcoords.length; i++) {
-                var cx = mapX(xcoords[i]),
-                    cy = mapY(ycoords[i]);
-                ctx.beginPath();
-                ctx.arc(cx, cy, 4, 0, 2*Math.PI);
-                ctx.fill();
-            }
-        }
-    </script>
-
+      // draw points
+      ctx.fillStyle = "#cc0000";
+      for (var i=0; i<xcoords.length; i++) {
+        var cx = mapX(xcoords[i]), cy = mapY(ycoords[i]);
+        ctx.beginPath();
+        ctx.arc(cx, cy, 4, 0, 2*Math.PI);
+        ctx.fill();
+      }
+    }
+  </script>
 </body>
+</html>
